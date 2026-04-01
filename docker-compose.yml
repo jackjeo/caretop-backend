@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=caretop
+      - DB_PASSWORD=caretop123
+      - DB_NAME=caretop
+      - JWT_SECRET=caretop-secret-key-change-in-production
+      - SERVER_PORT=8080
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    networks:
+      - caretop-network
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=caretop
+      - POSTGRES_PASSWORD=caretop123
+      - POSTGRES_DB=caretop
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - caretop-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - caretop-network
+
+networks:
+  caretop-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
