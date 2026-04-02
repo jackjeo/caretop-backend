@@ -3,6 +3,7 @@ version: '3.8'
 services:
   api:
     build: .
+    image: caretop-backend:latest
     ports:
       - "8080:8080"
     environment:
@@ -17,6 +18,17 @@ services:
     depends_on:
       - db
       - redis
+    restart: unless-stopped
+    networks:
+      - caretop-network
+
+  frontend:
+    build: ../caretop-frontend
+    image: caretop-frontend:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
     restart: unless-stopped
     networks:
       - caretop-network
